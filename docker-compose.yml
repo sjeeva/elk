@@ -1,0 +1,27 @@
+version: "2.0"
+
+services:
+  elasticsearch:
+    image: elasticsearch:5.0.0
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: kibana:5.0.0
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
+  logstash:
+    image: logstash:5.0.0
+    # NOTE: logstash isn't updating ES with command, might be an entry script bug
+    #command: -f /config-dir/apache.conf --log.level debug --config.debug
+    entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf 
+    volumes:
+      # NOTE: currently it is designed 
+      - ${PWD}/logstash/config/:/etc/logstash/conf.d
+      - /var/log/apache2/:/log/
+
+volumes:
+  esdata:
