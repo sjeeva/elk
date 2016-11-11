@@ -19,7 +19,7 @@ services:
     #command: -f /config-dir/apache.conf --log.level debug --config.debug
     entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf 
     volumes:
-      # NOTE: currently it is designed 
+      # NOTE: currently it configured to handle just apache logs
       - ${PWD}/logstash/config/:/etc/logstash/conf.d
       - /var/log/apache2/:/log/
 
