@@ -1,8 +1,11 @@
-version: "2.0"
+version: "3.0"
 
 services:
   elasticsearch:
     image: elasticsearch:5.0.0
+    # NOTE: the default vm.max_map_count maynot be enough to 
+    #       run elasticsearch increase it to at least  262144
+    # sudo sysctl vm.max_map_count=262144
     volumes:
       - esdata:/usr/share/elasticsearch/data
 
