@@ -8,23 +8,39 @@ services:
     # sudo sysctl vm.max_map_count=262144
     volumes:
       - esdata:/usr/share/elasticsearch/data
+    networks:
+      - logging
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 
   kibana:
     image: kibana:5.0.0
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+    networks:
+      - logging
     ports:
       - "5601:5601"
 
   logstash:
     image: logstash:5.0.0
     # NOTE: logstash isn't updating ES with command, might be an entry script bug
-    #command: -f /config-dir/apache.conf --log.level debug --config.debug
+    # command: -f /config-dir/apache.conf --log.level debug --config.debug
     entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf 
+    networks:
+      - logging
     volumes:
-      # NOTE: currently it is configured to handle just apache logs
       - ${PWD}/logstash/config/:/etc/logstash/conf.d
-      - /var/log/apache2/:/log/
+    deploy:
+      mode: global
+    ports:
+      - "4560:4560/udp"
+
+networks:
+  logging:
 
 volumes:
   esdata:
+
