@@ -1,0 +1,8 @@
+version: "2"
+services:
+  log-gen:
+    image: chentex/random-logger
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://127.0.0.1:4560"
