@@ -32,7 +32,7 @@ services:
     networks:
       - logging
     volumes:
-      - /home/ubuntu/elk/logstash/config/:/etc/logstash/conf.d
+      - ${PWD}/logstash/config/:/etc/logstash/conf.d
     deploy:
       mode: global
     ports:
