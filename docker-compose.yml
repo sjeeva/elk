@@ -28,11 +28,13 @@ services:
     image: logstash:5.0.0
     # NOTE: logstash isn't updating ES with command, might be an entry script bug
     # command: -f /config-dir/apache.conf --log.level debug --config.debug
-    entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf 
+    # entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf
+    # volumes:
+    #   - ${PWD}/logstash/config/:/etc/logstash/conf.d
+    
+    entrypoint: -e 'input { gelf { port => 4560 } } output { elasticsearch { hosts => ["elasticsearch:9200"] } stdout { codec => rubydebug } }'
     networks:
       - logging
-    volumes:
-      - ${PWD}/logstash/config/:/etc/logstash/conf.d
     deploy:
       mode: global
     ports:
