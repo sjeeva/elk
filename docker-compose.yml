@@ -31,8 +31,7 @@ services:
     # entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf
     # volumes:
     #   - ${PWD}/logstash/config/:/etc/logstash/conf.d
-    
-    entrypoint: -e 'input { gelf { port => 4560 } } output { elasticsearch { hosts => ["elasticsearch:9200"] } stdout { codec => rubydebug } }'
+    entrypoint: logstash -e 'input { gelf { port => 4560 } } output { elasticsearch { hosts => ["elasticsearch:9200"] } stdout { codec => rubydebug } }'
     networks:
       - logging
     deploy:
