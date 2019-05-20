@@ -2,21 +2,23 @@ version: "3.0"
 
 services:
   elasticsearch:
-    image: elasticsearch:5.0.0
+    image: elasticsearch:7.0.1
     # NOTE: the default vm.max_map_count maynot be enough to 
     #       run elasticsearch increase it to at least  262144
     # sudo sysctl vm.max_map_count=262144
     volumes:
       - esdata:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
     networks:
       - logging
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
+#    deploy:
+#      placement:
+#        constraints:
+#          - node.role == manager
 
   kibana:
-    image: kibana:5.0.0
+    image: kibana:7.0.1
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     networks:
@@ -25,17 +27,17 @@ services:
       - "5601:5601"
 
   logstash:
-    image: logstash:5.0.0
+    image: logstash:7.0.1
     # NOTE: logstash isn't updating ES with command, might be an entry script bug
     # command: -f /config-dir/apache.conf --log.level debug --config.debug
-    # entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf
-    # volumes:
-    #   - ${PWD}/logstash/config/:/etc/logstash/conf.d
-    entrypoint: logstash -e 'input { gelf { port => 4560 } } output { elasticsearch { hosts => ["elasticsearch:9200"] } stdout { codec => rubydebug } }'
+    #entrypoint: logstash -e 'input { gelf { port => 4560 } } output { elasticsearch { hosts => ["elasticsearch:9200"] } stdout { codec => rubydebug } }'
+    entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf
+    volumes:
+      - ${PWD}/logstash/config/:/etc/logstash/conf.d
     networks:
       - logging
-    deploy:
-      mode: global
+#    deploy:
+#      mode: global
     ports:
       - "4560:4560/udp"
 
